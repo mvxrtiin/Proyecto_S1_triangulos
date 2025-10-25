@@ -31,12 +31,23 @@ int main() {
     TRIANGULO triangulos[MAX_TRIANGULOS], hexagono[MAX_TRIANGULOS];
     int puntuacion_total, triangulos_usados[MAX_TRIANGULOS];
     char separador[2];
-    // Durante la ejecucion
+    // durante la ejecucion
     while (1) {
         // Lectura de sets de triangulos
         if (leer_set(triangulos) != 1) {
-            break;
+            // Si hay un set invalido lee el separador y continua
+            if (scanf("%1s", separador) != 1){
+                break;
+            }
+            // Limpia el búfer, evita caracteres no deseados
+            int c;
+            while ((c = getchar()) != '\n' && c != EOF);
+            if (separador[0] == '$'){
+                break;
+            }
+            continue;
         }
+        
         
         // Inicialización de variables
         puntuacion_total = PUNTUACION_INVALIDA;
@@ -54,9 +65,12 @@ int main() {
         }
 
         // Comprueba que exista un separador de sets 
-        if (scanf("%s", separador) != 1) {
+        if (scanf("%1s", separador) != 1) {
             break;
         }
+        // Limpia el búfer, evita caracteres extra
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF);
         // Si el separador es $, se finaliza el programa
         if (separador[0] == '$') {
             break;
@@ -71,12 +85,17 @@ int leer_set(TRIANGULO triangulos[MAX_TRIANGULOS]) {
     for (i = 0; i < MAX_TRIANGULOS; i++) {
         if (scanf("%d %d %d", &triangulos[i].lado[0], &triangulos[i].lado[1], &triangulos[i].lado[2]) != 3) {
             exito = 0;
+            // Limpia el búfer antes de salir de scanf
+            int c;
+            while ((c = getchar()) != '\n' && c != EOF);
             break;
         }
+        // Limpia el búfer despues de salir de scanf (elimina valores extra)
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF);
     }
     return exito;
 }
-
 
 TRIANGULO rotar_triangulo(TRIANGULO triangulo, int rotacion) {
     TRIANGULO triangulo_rotado;
@@ -118,10 +137,10 @@ void buscar_puntuacion_alta(int pos_hexagono, TRIANGULO triangulos[MAX_TRIANGULO
 
     for (i = 0; i < MAX_TRIANGULOS; i++) {
         if (triangulos_usados[i] == 0) {
-            for (int r = 0; r < 3; r++) {
+            int r;
+            for (r = 0; r < 3; r++) {
                 TRIANGULO triangulo_rotado = rotar_triangulo(triangulos[i], r);
                 int es_valido = 1;
-                
                 if (pos_hexagono > 0) {
                     // Verifica si el valor de los vertices comunes entre dos triangulos son iguales
                     if (triangulo_rotado.lado[LADO_IZQ] != hexagono[pos_hexagono - 1].lado[LADO_DER]) {
